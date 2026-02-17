@@ -824,6 +824,7 @@ rm -rf "$OURDIR/$ROOTDIR"/var/cache/libdnf5/*
 umount "$OURDIR/$ROOTDIR"/var/cache/libdnf5
 rm -rf "$OURDIR/$ROOTDIR"/var/cache/dnf/*
 umount "$OURDIR/$ROOTDIR"/var/cache/dnf
+rm -rf /tmp/dnf-host-cache
 
 # FIXME (continued) workaround for ldd being
 # broken on aarch64 (at least in qemu)
@@ -1085,6 +1086,20 @@ dnf5 -y reinstall --installroot="$OURDIR/$ROOTDIR" --releasever=$OMV_VERSION --f
 [ -d "$OURDIR/$ROOTDIR/var/cache/dnf" ] && rm -rf "$OURDIR/$ROOTDIR/var/cache/dnf/*"
 
 run generate-bootimg
+
+if [[ -n "${LOOPDEV}" ]]; then
+	# Since we may be generating an image file that is supposed to be compressed,
+	# overwrite remnants of deleted temporary files etc. with something more
+	# compression friendly
+        for i in "${!PARTITIONS[@]}"; do
+                MP="$(echo ${PARTITIONS[$i]}|cut -d: -f5)"
+		[[ -z "$MP" ]] && continue
+		echo "=== Cleaning up $MP ==="
+		dd if=/dev/zero of=${OURDIR}/${ROOTDIR}${MP}/temp-cleanup || :
+		rm -f ${OURDIR}/${ROOTDIR}${MP}/temp-cleanup
+        done
+fi
+
 # Stuff in virtual filesystems should not make it to
 # root filesystems...
 cleanup
