@@ -1,0 +1,21 @@
+ARCH=aarch64
+
+# Kernel source
+KERNEL=https://github.com/RegretsDreams/kernel_oneplus_8t_android16.git#lineageos22.1-a16bpf
+KERNEL_CONFIG=kebab_defconfig
+
+# DTB path inside the kernel tree
+DTB=arch/arm64/boot/dts/qcom/kebab.dtb
+
+# Android boot image required
+USE_UEFI=no
+NEED_INITRD=yes
+
+# Android kernels expect GCC
+KERNEL_GCC=yes
+
+# Firmware + binder drivers
+HWPACKAGES="linux-firmware qcom-firmware binder-linux"
+
+# Mobile UI stack
+HWPACKAGESETS="plasmamobile"
