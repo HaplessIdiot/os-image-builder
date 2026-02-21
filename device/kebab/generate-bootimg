@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+KERNEL_IMG="$KERNEL_BUILD_DIR/arch/arm64/boot/Image"
+DTB_IMG="$KERNEL_BUILD_DIR/arch/arm64/boot/dts/qcom/kebab.dtb"
+RAMDISK="$INITRD"
+
+mkbootimg \
+  --kernel "$KERNEL_IMG" \
+  --ramdisk "$RAMDISK" \
+  --dtb "$DTB_IMG" \
+  --header_version 2 \
+  --pagesize 4096 \
+  --base 0x00000000 \
+  --cmdline "$CMDLINE" \
+  -o "$OUTDIR/boot.img"
